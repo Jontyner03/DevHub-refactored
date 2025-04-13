@@ -3,7 +3,7 @@ dotenv.config();
 
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
-import projectRoutes from './routes/projectRoutes.js';s
+import projectRoutes from './routes/projectRoutes.js';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';

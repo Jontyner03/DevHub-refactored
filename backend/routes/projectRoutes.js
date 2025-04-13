@@ -8,11 +8,11 @@ const router = express.Router();
 
 router.get('/me', authMiddleware, getMyProjects);
 router.get('/', getAllProjects);
-import upload from "../middleware/uploadMiddleware.js";
+
 
 router.post('/', authMiddleware, createProject); //create proj route; no image.
 router.post( "/create", authMiddleware, upload.single("image"), createProject);
-router.post("/update/:id",authMiddleware,upload.single("image"), editProject);
+router.post("/update/:id",authMiddleware, upload.single("image"), editProject);
 
 router.delete("/delete/:id", authMiddleware, deleteProject);
 export default router;
