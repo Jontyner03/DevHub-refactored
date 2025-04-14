@@ -74,7 +74,9 @@ export const deleteProject = async (req, res) => {
 //fetch user proj's for dashboard
 export const getMyProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const projects = await Project.find({ user: req.user._id })
+      .populate("user", "name email") // Populate user details
+      .sort({ createdAt: -1 });
     res.json(projects);
   } catch (err) {
     res.status(500).json({ message: "Failed to load projects" });
