@@ -50,14 +50,22 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axiosInstance.get("/projects/me"); // Ensure user details are included
+        const res = await axiosInstance.get("/projects/me"); //Ensure user details are included
         setProjects(res.data);
       } catch (err) {
         console.error("Failed to load projects", err);
       }
     };
+
+
+
     fetchProjects();
+
   }, []);
+
+  const handleDelete = (projectId) => {
+    setProjects((prevProjects) => prevProjects.filter((project) => project._id !== projectId));
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white shadow-lg rounded-lg">
@@ -75,7 +83,12 @@ export default function Dashboard() {
           </Link>.
         </p>
       ) : (
-        <ProjectList projects={projects} technologyIcons={technologyIcons} />
+        <ProjectList
+          projects={projects}
+          technologyIcons={technologyIcons}
+          showDeleteButton={true}
+          onDelete={handleDelete}
+        />
       )}
     </div>
   );

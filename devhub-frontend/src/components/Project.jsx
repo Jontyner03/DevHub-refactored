@@ -1,8 +1,54 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import axiosInstance from "../api/axiosInstance";
 
-export default function Project({ project, technologyIcons }) {
+export default function Project({ project, technologyIcons, showDeleteButton, onDelete }) {
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await axiosInstance.delete(`/projects/delete/${project._id}`);
+      onDelete(project._id); // Notify parent component to remove the project from the list
+      setShowConfirmPopup(false);
+    } catch (err) {
+      console.error("Failed to delete project", err);
+    }
+  };
+
   return (
-    <div className="border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition">
+    <div className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition">
+      {showDeleteButton && (
+        <>
+          <span
+            onClick={() => setShowConfirmPopup(true)}
+            className="absolute top-2 right-2 text-red-500 text-xl font-bold cursor-pointer hover:text-red-600"
+            title="Delete Project"
+          >
+            ✕
+          </span>
+          {showConfirmPopup && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+              <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
+                <p className="mb-4">Are you sure you want to delete this project?</p>
+                <div className="flex justify-end gap-4">
+                  <button
+                    onClick={() => setShowConfirmPopup(false)}
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
       <h2 className="text-2xl font-semibold text-blue-400 mb-2">{project.title}</h2>
       <p className="text-gray-300 mb-4">{project.description}</p>
       {project.link && (
@@ -19,7 +65,7 @@ export default function Project({ project, technologyIcons }) {
         <img
           src={project.image}
           alt="Project"
-          className="w-full h-auto object-contain rounded-lg mt-4"
+          className="w-full h-auto object-cover rounded-lg mt-4"
         />
       )}
       <div className="mt-4">

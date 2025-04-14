@@ -65,7 +65,11 @@ export default function Explore() {
       {projects.length === 0 ? (
         <p className="text-gray-400">No projects found.</p>
       ) : (
-        <ProjectList projects={projects} technologyIcons={technologyIcons} />
+        <ProjectList
+          projects={projects}
+          technologyIcons={technologyIcons}
+          showDeleteButton={false}
+        />
       )}
     </div>
   );

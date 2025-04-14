@@ -1,4 +1,5 @@
 import Project from '../schema/Project.js';
+import { cloudinary } from "../config/cloudinary.js";
 
 //////CRUD PROJECT OPPS////// requires user JWT authentication provided by auth middware  
 export const createProject = async (req, res) => {
@@ -54,22 +55,48 @@ export const editProject = async (req, res) => {
 
 //delete project
 export const deleteProject = async (req, res) => {
-  const projectId = req.params.id;
+  const projectId = req.params.id;//project id from url params
+  const userId = req.user._id; //user id from auth middleware; gaurantee security despite weak auth in rendering access to delete endpoint 
 
   try {
-    const deletedProject = await Project.findByIdAndDelete(projectId);
+    console.log(`Attempting to delete project with ID: ${projectId}`);
 
-    if (!deletedProject) {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      console.error("Project not found");
       return res.status(404).json({ message: "Project not found" });
     }
 
+    //Ensure the user is the owner of the project
+    if (project.user.toString() !== userId.toString()) {
+      console.error("Unauthorized to delete this project");
+      return res.status(403).json({ message: "Unauthorized to delete this project" });
+    }
+
+    console.log("User authorized to delete the project");
+
+    //Delete the image from cloudinary if present 
+    if (project.image) {
+      const publicId = project.image.split('/').pop().split('.')[0]; //get public id from url
+      console.log(`Image URL: ${project.image}`);
+      try {
+        console.log(`Deleting image from Cloudinary with public ID: ${publicId}`);
+        await cloudinary.uploader.destroy(publicId); //delete image from cloudinary
+      } catch (err) {
+        console.error("Failed to delete image from Cloudinary:", err);
+        return res.status(500).json({ message: "Failed to delete image from Cloudinary" });
+      }
+    }
+
+    console.log("Deleting project from db");
+    await project.deleteOne(); 
     res.json({ message: "Project deleted successfully" });
   } catch (err) {
+    console.error("Error deleting project:", err);
     res.status(500).json({ message: "Failed to delete project" });
   }
 };
-
-
 
 //fetch user proj's for dashboard
 export const getMyProjects = async (req, res) => {
