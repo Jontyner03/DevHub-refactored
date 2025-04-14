@@ -57,6 +57,19 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
+/* Button styles for project favorite and delete button */
+button.project-button {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  transition: none;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

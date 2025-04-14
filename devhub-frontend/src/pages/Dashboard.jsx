@@ -50,7 +50,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axiosInstance.get("/projects/me"); //Ensure user details are included
+        const res = await axiosInstance.get("/projects/me"); // Ensure user details are included
         setProjects(res.data);
       } catch (err) {
         console.error("Failed to load projects", err);
@@ -58,7 +58,7 @@ export default function Dashboard() {
     };
 
 
-
+    
     fetchProjects();
 
   }, []);
