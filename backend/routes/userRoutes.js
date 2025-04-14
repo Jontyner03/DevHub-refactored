@@ -1,6 +1,6 @@
 import express from 'express';
 import authMiddleware from '../middleware/authMiddleware.js';
-import { updateMe, getPublicProfile, updateSocials, updateProfileImage, favoriteProject, getFavoriteProjects } from '../requestHandlers/userController.js';
+import { updateMe, getPublicProfile, updateSocials, updateProfileImage, favoriteProject } from '../requestHandlers/userController.js';
 import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
@@ -23,6 +23,6 @@ router.put("/socials", authMiddleware, updateSocials); //update social links in 
 router.put('/favorite/:id', authMiddleware, favoriteProject); //route to add proj with id to users favorites
 
 //get users fav projects
-router.get('/favorites', authMiddleware, getFavoriteProjects);
+//router.get('/favorites', authMiddleware, getFavoriteProjects);
 
 export default router;
