@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     profileImage: { type: String, default: '' },
     github: { type: String, default: '' },
     linkedin: { type: String, default: '' },
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }], //Array of project IDs that the user has favorited
 }, { timestamps: true });
 
 //TO DO: Seperate user schema for auth, profile details, and basic info (name, email etc.)

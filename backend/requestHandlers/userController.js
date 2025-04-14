@@ -69,3 +69,27 @@ export const updateProfileImage =  async (req, res) => {
     }
   }
 
+export const favoriteProject = async (req, res) => {
+  const { projectId } = req.params;
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (user.favorites.includes(projectId)) {
+      console.log("unfavorting project");
+      user.favorites.pull(projectId); //rmv from favorites
+    } else {
+      console.log("favoriting project");
+      user.favorites.push(projectId); //add project to favorites
+    }
+    
+    await user.save();
+    res.json({ message: "Favorites updated", favorites: user.favorites });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update favorites" });
+  }
+};
+
+
+
