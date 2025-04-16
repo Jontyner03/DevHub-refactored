@@ -5,6 +5,8 @@ import ProjectList from "../components/ProjectList";
 
 export default function Explore() {
   const [projects, setProjects] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const technologyIcons = {
     React: "https://cdn.simpleicons.org/react/61DAFB",
@@ -47,7 +49,12 @@ export default function Explore() {
     Android: "https://cdn.simpleicons.org/android/3DDC84",
   };
 
+  
   useEffect(() => {
+    //Check if the user is logged in
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+
     const fetchAllProjects = async () => {
       try {
         const res = await axiosInstance.get("/projects");
@@ -56,8 +63,35 @@ export default function Explore() {
         console.error("Error loading global feed", err);
       }
     };
+
+    const fetchFavorites = async () => {
+      //if user is logged in, fetch favorites
+      if (token) {
+        try {
+          const res = await axiosInstance.get("/users/favorite/me");
+          setFavorites(res.data.map((project) => project._id));
+        } catch (err) {
+          console.error("Failed to load favorites", err);
+        }
+      }
+    };
+
     fetchAllProjects();
+    fetchFavorites();
   }, []);
+
+  const handleFavoriteToggle = async (projectId) => {
+    try {
+      await axiosInstance.put(`/users/favorite/${projectId}`);
+      setFavorites((prevFavorites) =>
+        prevFavorites.includes(projectId)
+          ? prevFavorites.filter((id) => id !== projectId)
+          : [...prevFavorites, projectId]
+      );
+    } catch (err) {
+      console.error("Failed to update favorite status", err);
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg">
@@ -67,9 +101,20 @@ export default function Explore() {
       ) : (
         <ProjectList
           projects={projects}
+          favorites={isLoggedIn ? favorites : []}
           technologyIcons={technologyIcons}
           showDeleteButton={false}
+          onFavoriteToggle={isLoggedIn ? handleFavoriteToggle : null} //Pass toggle handler only if logged in
+          isLoggedIn={isLoggedIn} //Pass isLoggedIn to ProjectList
         />
+      )}
+      {!isLoggedIn && (
+        <p className="text-gray-400 mt-4">
+          <Link to="/login" className="text-blue-400 hover:underline">
+            Log in
+          </Link>{" "}
+          to favorite projects.
+        </p>
       )}
     </div>
   );

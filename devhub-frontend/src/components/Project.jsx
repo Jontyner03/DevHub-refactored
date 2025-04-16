@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 
-export default function Project({ project, isFavorite, technologyIcons, showDeleteButton, onDelete, onFavoriteToggle }) {
+export default function Project({ project, isFavorite, technologyIcons, showDeleteButton, onDelete, onFavoriteToggle, isLoggedIn }) {
   const [favorite, setFavorite] = useState(isFavorite); //Use the prop to set initial state
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
@@ -68,15 +68,17 @@ export default function Project({ project, isFavorite, technologyIcons, showDele
       )}
       <h2 className="text-2xl font-semibold text-blue-400 mb-2 flex items-center">
         {project.title}
-        <button
-          onClick={handleFavoriteToggle}
-          className={`ml-0 text-xl font-bold project-button ${
-            favorite ? "text-yellow-400" : "text-gray-400"
-          } hover:text-yellow-500`}
-          title={favorite ? "Unfavorite Project" : "Favorite Project"}
-        >
-          ★
-        </button>
+        {isLoggedIn && ( //Only render favorite button if the user is logged in
+          <button
+            onClick={handleFavoriteToggle}
+            className={`ml-0 text-xl font-bold project-button ${
+              favorite ? "text-yellow-400" : "text-gray-400"
+            } hover:text-yellow-500`}
+            title={favorite ? "Unfavorite Project" : "Favorite Project"}
+          >
+            ★
+          </button>
+        )}
       </h2>
       <p className="text-gray-300 mb-4">{project.description}</p>
       {project.link && (

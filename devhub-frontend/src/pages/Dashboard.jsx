@@ -121,6 +121,7 @@ export default function Dashboard() {
           showDeleteButton={true}
           onDelete={handleDelete}
           onFavoriteToggle={handleFavoriteToggle} //Pass the toggle handler
+          isLoggedIn={true} //protected route so always true
         />
       )}
     </div>
