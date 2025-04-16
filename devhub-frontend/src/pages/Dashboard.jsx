@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import ProjectList from "../components/ProjectList";
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState([]); //State to hold all projects
+  const [myProjects, setMyProjects] = useState([]); //State to hold user's projects
+  const [favoriteProjects, setFavoriteProjects] = useState([]); //State to hold favorite projects objects
   const [favorites, setFavorites] = useState([]); //State to hold favorite projects
+  const [showFavorites, setShowFavorites] = useState(false); // Toggle state for displaying lists
   //////CHANGES TO HANDLE FAVORITES///////
   //use effect to fetch favorite project ids from api/favorites/me 
   //pass to project list 
@@ -58,15 +61,15 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchMyProjects = async () => {
       try {
-        const res = await axiosInstance.get("/projects/me");
-        setProjects(res.data);
+        const res = await axiosInstance.get("/projects/me"); // Fetch all projects
+        setMyProjects(res.data);
       } catch (err) {
         console.error("Failed to load projects", err);
       }
     };
-
+  
     const fetchFavorites = async () => {
       try {
         const res = await axiosInstance.get("/users/favorite/me");
@@ -75,11 +78,28 @@ export default function Dashboard() {
         console.error("Failed to load favorites", err);
       }
     };
-
-    fetchProjects();
+  
+    const fetchAllProjects = async () => {
+      try {
+        const res = await axiosInstance.get("/projects");
+        setProjects(res.data);
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      }
+    };
+  
+    //fetch all projects, my projects and favorites when the component mounts
+    fetchMyProjects();
     fetchFavorites();
-  }, []);
-
+    fetchAllProjects();
+  }, []); //run once on mount
+  
+  useEffect(() => {
+    //Update favorite projects whenever `projects` or `favorites` changes
+    setFavoriteProjects(
+      projects.filter((project) => favorites.includes(project._id))
+    );
+  }, [projects, favorites]); 
 
   const handleFavoriteToggle = async (projectId) => {
     try {
@@ -95,33 +115,60 @@ export default function Dashboard() {
   };
 
   const handleDelete = (projectId) => {
-    setProjects((prevProjects) => prevProjects.filter((project) => project._id !== projectId));
+    setMyProjects((prevProjects) =>
+      prevProjects.filter((project) => project._id !== projectId)
+    );
   };
 
+  //Render another ProjectList component for list of all favoriteed projects
+  //Which list is displayed [my projects or favorites] is determined by toggle 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white shadow-lg rounded-lg">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-extrabold text-blue-400">My Projects</h1>
-        <Link to="/create-project" className="bg-blue-500 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-600 transition">
-          + New Project
-        </Link>
+        <h1 className="text-4xl font-extrabold text-blue-400">
+          {showFavorites ? "Favorite Projects" : "My Projects"}
+        </h1>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowFavorites(false)}
+            className={`px-4 py-2 rounded-lg shadow ${
+              !showFavorites
+                ? "bg-blue-500 text-white"
+                : "bg-gray-700 text-gray-300"
+            } hover:bg-blue-600 transition`}
+          >
+            My Projects
+          </button>
+          <button
+            onClick={() => setShowFavorites(true)}
+            className={`px-4 py-2 rounded-lg shadow ${
+              showFavorites
+                ? "bg-blue-500 text-white"
+                : "bg-gray-700 text-gray-300"
+            } hover:bg-blue-600 transition`}
+          >
+            Favorites
+          </button>
+        </div>
       </div>
-      {projects.length === 0 ? (
-        <p className="text-gray-400 text-lg">
-          No projects yet.{" "}
-          <Link to="/create-project" className="text-blue-400 hover:underline">
-            Create one
-          </Link>.
-        </p>
+      {showFavorites ? (
+        <ProjectList
+          projects={favoriteProjects}
+          favorites={favorites}
+          technologyIcons={technologyIcons}
+          showDeleteButton={false}
+          onFavoriteToggle={handleFavoriteToggle}
+          isLoggedIn={true}
+        />
       ) : (
         <ProjectList
-          projects={projects}
+          projects={myProjects}
           favorites={favorites}
           technologyIcons={technologyIcons}
           showDeleteButton={true}
           onDelete={handleDelete}
-          onFavoriteToggle={handleFavoriteToggle} //Pass the toggle handler
-          isLoggedIn={true} //protected route so always true
+          onFavoriteToggle={handleFavoriteToggle}
+          isLoggedIn={true}
         />
       )}
     </div>
