@@ -70,12 +70,11 @@ export const updateProfileImage =  async (req, res) => {
   }
 
 export const favoriteProject = async (req, res) => {
-  const { projectId } = req.params;
-
+  const { id: projectId } = req.params;
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
-
+    console.log(projectId);
     if (user.favorites.includes(projectId)) {
       console.log("unfavorting project");
       user.favorites.pull(projectId); //rmv from favorites
@@ -90,6 +89,17 @@ export const favoriteProject = async (req, res) => {
     res.status(500).json({ message: "Failed to update favorites" });
   }
 };
+
+export const getFavorites = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate("favorites");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json(user.favorites);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load favorites" });
+  }
+}
 
 
 

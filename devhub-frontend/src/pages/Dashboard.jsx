@@ -5,8 +5,18 @@ import ProjectList from "../components/ProjectList";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
+  const [favorites, setFavorites] = useState([]); //State to hold favorite projects
+  //////CHANGES TO HANDLE FAVORITES///////
+  //use effect to fetch favorite project ids from api/favorites/me 
+  //pass to project list 
+  //projects list passes isFavorite prop to project component with the value of project._id in favorites array
+  //if project._id is in favorites array, set isFavorite to true, else false
 
-  const technologyIcons = {
+  //in proj component, clicking favprite triggers handleFavoriteToggle and sends a put request to api/users/favorite/:id
+  //When project is favorited/unfavorited, it will be added to the favorites array in the backend and the Dashboard will update fetchFavorites to include/rmv the project
+  
+
+    const technologyIcons = {
     React: "https://cdn.simpleicons.org/react/61DAFB",
     JavaScript: "https://cdn.simpleicons.org/javascript/F7DF1E",
     "Node.js": "https://cdn.simpleicons.org/nodedotjs/339933",
@@ -50,18 +60,39 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axiosInstance.get("/projects/me"); // Ensure user details are included
+        const res = await axiosInstance.get("/projects/me");
         setProjects(res.data);
       } catch (err) {
         console.error("Failed to load projects", err);
       }
     };
 
+    const fetchFavorites = async () => {
+      try {
+        const res = await axiosInstance.get("/users/favorite/me");
+        setFavorites(res.data.map((project) => project._id)); // Store only the IDs
+      } catch (err) {
+        console.error("Failed to load favorites", err);
+      }
+    };
 
-    
     fetchProjects();
-
+    fetchFavorites();
   }, []);
+
+
+  const handleFavoriteToggle = async (projectId) => {
+    try {
+      await axiosInstance.put(`/users/favorite/${projectId}`);
+      setFavorites((prevFavorites) =>
+        prevFavorites.includes(projectId)
+          ? prevFavorites.filter((id) => id !== projectId) //rmv proj if already favorited
+          : [...prevFavorites, projectId] // Add if not favorited
+      );
+    } catch (err) {
+      console.error("Failed to update favorite status", err);
+    }
+  };
 
   const handleDelete = (projectId) => {
     setProjects((prevProjects) => prevProjects.filter((project) => project._id !== projectId));
@@ -85,9 +116,11 @@ export default function Dashboard() {
       ) : (
         <ProjectList
           projects={projects}
+          favorites={favorites}
           technologyIcons={technologyIcons}
           showDeleteButton={true}
           onDelete={handleDelete}
+          onFavoriteToggle={handleFavoriteToggle} //Pass the toggle handler
         />
       )}
     </div>

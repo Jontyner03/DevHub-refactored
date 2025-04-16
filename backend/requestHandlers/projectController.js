@@ -102,9 +102,10 @@ export const deleteProject = async (req, res) => {
 export const getMyProjects = async (req, res) => {
   try {
     const projects = await Project.find({ user: req.user._id })
-      .populate("user", "name email") // Populate user details
+      .populate("user", "name email") //Populate user details
       .sort({ createdAt: -1 });
     res.json(projects);
+    //console.log(projects);
   } catch (err) {
     res.status(500).json({ message: "Failed to load projects" });
   }
@@ -118,6 +119,7 @@ export const getAllProjects = async (req, res) => {
       .populate("user", "name email") //add user details to projects in respone 
       .sort({ createdAt: -1 });
     res.json(projects);
+    console.log(projects);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch projects" });
   }

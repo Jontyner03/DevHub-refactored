@@ -1,25 +1,31 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 
-export default function Project({ project, technologyIcons, showDeleteButton, onDelete }) {
-  const [isFavorite, setIsFavorite] = useState(project.isFavorite || false);
+export default function Project({ project, isFavorite, technologyIcons, showDeleteButton, onDelete, onFavoriteToggle }) {
+  const [favorite, setFavorite] = useState(isFavorite); //Use the prop to set initial state
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
-  //handles favorite toggle, adds or removes project from favorites based on curr value in db
-  const handleFavoriteToggle = async (e) => {
+  //update favorite state based on prop change passed from parent component
+  //needed to set initial state to isFavorite prop value; syncs local state with prop value
+  useEffect(() => {
+    setFavorite(isFavorite);
+  }, [isFavorite]);
+
+  //
+  const handleFavoriteToggle = async () => {
     try {
-      await axiosInstance.put(`/users/favorite/${project._id}`);
-      setIsFavorite((prev) => !prev); //Toggle favorite status
+      await onFavoriteToggle(project._id); //Call the parent handler
+      setFavorite((prev) => !prev); //update local state after frontend post request; brought into sync by useEffect 
     } catch (err) {
       console.error("Failed to update favorite status", err);
     }
   };
 
-  const handleDelete = async (e) => {
+  const handleDelete = async () => {
     try {
       await axiosInstance.delete(`/projects/delete/${project._id}`);
-      onDelete(project._id); //Notify parent component to remove the project from the list
+      onDelete(project._id);
       setShowConfirmPopup(false);
     } catch (err) {
       console.error("Failed to delete project", err);
@@ -31,10 +37,7 @@ export default function Project({ project, technologyIcons, showDeleteButton, on
       {showDeleteButton && (
         <>
           <button
-            onClick={() => {
-             
-              setShowConfirmPopup(true);
-            }}
+            onClick={() => setShowConfirmPopup(true)}
             className="absolute top-2 right-2 text-red-500 text-xl font-bold project-button"
             title="Delete Project"
           >
@@ -46,9 +49,7 @@ export default function Project({ project, technologyIcons, showDeleteButton, on
                 <p className="mb-4">Are you sure you want to delete this project?</p>
                 <div className="flex justify-end gap-4">
                   <button
-                    onClick={(e) => {
-                      setShowConfirmPopup(false);
-                    }}
+                    onClick={() => setShowConfirmPopup(false)}
                     className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 project-button"
                   >
                     Cancel
@@ -70,9 +71,9 @@ export default function Project({ project, technologyIcons, showDeleteButton, on
         <button
           onClick={handleFavoriteToggle}
           className={`ml-0 text-xl font-bold project-button ${
-            isFavorite ? "text-yellow-400" : "text-gray-400"
+            favorite ? "text-yellow-400" : "text-gray-400"
           } hover:text-yellow-500`}
-          title={isFavorite ? "Unfavorite Project" : "Favorite Project"}
+          title={favorite ? "Unfavorite Project" : "Favorite Project"}
         >
           ★
         </button>
