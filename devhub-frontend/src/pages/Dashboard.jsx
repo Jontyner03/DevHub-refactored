@@ -63,7 +63,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchMyProjects = async () => {
       try {
-        const res = await axiosInstance.get("/projects/me"); // Fetch all projects
+        const res = await axiosInstance.get("/projects/me"); 
         setMyProjects(res.data);
       } catch (err) {
         console.error("Failed to load projects", err);
@@ -73,7 +73,7 @@ export default function Dashboard() {
     const fetchFavorites = async () => {
       try {
         const res = await axiosInstance.get("/users/favorite/me");
-        setFavorites(res.data.map((project) => project._id)); // Store only the IDs
+        setFavorites(res.data.map((project) => project._id)); 
       } catch (err) {
         console.error("Failed to load favorites", err);
       }
@@ -119,7 +119,36 @@ export default function Dashboard() {
       prevProjects.filter((project) => project._id !== projectId)
     );
   };
-
+  
+  //Refresh the project list with the latest comments when a new comment is added
+  const refreshProjects = async (projectId) => {
+    try {
+      const res = await axiosInstance.get(`/comments/${projectId}?limit=2`);
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === projectId
+            ? { ...project, comments: res.data.comments, hasMoreComments: res.data.hasMore }
+            : project
+        )
+      );
+      setMyProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === projectId
+            ? { ...project, comments: res.data.comments, hasMoreComments: res.data.hasMore }
+            : project
+        )
+      );
+      setFavoriteProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === projectId
+            ? { ...project, comments: res.data.comments, hasMoreComments: res.data.hasMore }
+            : project
+        )
+      );
+    } catch (err) {
+      console.error("Failed to refresh project comments", err);
+    }
+  };
   //Render another ProjectList component for list of all favoriteed projects
   //Which list is displayed [my projects or favorites] is determined by toggle 
   return (
@@ -159,6 +188,7 @@ export default function Dashboard() {
           showDeleteButton={false}
           onFavoriteToggle={handleFavoriteToggle}
           isLoggedIn={true}
+          refreshProjects={refreshProjects} //pass refresh to signal comment added
         />
       ) : (
         <ProjectList
@@ -169,6 +199,7 @@ export default function Dashboard() {
           onDelete={handleDelete}
           onFavoriteToggle={handleFavoriteToggle}
           isLoggedIn={true}
+          refreshProjects={refreshProjects} 
         />
       )}
     </div>

@@ -2,21 +2,57 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 
-export default function Project({ project, isFavorite, technologyIcons, showDeleteButton, onDelete, onFavoriteToggle, isLoggedIn }) {
-  const [favorite, setFavorite] = useState(isFavorite); //Use the prop to set initial state
+export default function Project({
+  project,
+  isFavorite,
+  technologyIcons,
+  showDeleteButton,
+  onDelete,
+  onFavoriteToggle,
+  isLoggedIn,
+  onClick,
+  showComments,
+}) {
+  
+  const [favorite, setFavorite] = useState(isFavorite); // Use the prop to set initial state
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
+  const [comments, setComments] = useState([]); //Store comments for the project
+  const [hasMoreComments, setHasMoreComments] = useState(false); //Track if more than limit projec
 
-  //update favorite state based on prop change passed from parent component
-  //needed to set initial state to isFavorite prop value; syncs local state with prop value
+  //Update favorite state based on prop change passed from parent component
   useEffect(() => {
     setFavorite(isFavorite);
   }, [isFavorite]);
 
-  //
+  //Fetch the first 2 comments for the project
+  useEffect(() => {
+    if (showComments) {
+    const fetchComments = async () => {
+      try {
+        const res = await axiosInstance.get(`/comments/${project._id}?limit=2`);
+        setComments(res.data.comments);
+        setHasMoreComments(res.data.hasMore); //Backend should return true if there are more comments
+      } catch (err) {
+        console.error("Failed to fetch comments", err);
+      }
+    };
+
+    fetchComments();
+  }
+  }, [project._id], showComments); //show comments when project ID changes or showComments is true
+
+
+  useEffect(() => {
+    if (project.comments) {
+      setComments(project.comments); //use the updated comments from the project prop
+      setHasMoreComments(project.hasMoreComments || false);
+    }
+  }, [project.comments]);
+
   const handleFavoriteToggle = async () => {
     try {
-      await onFavoriteToggle(project._id); //Call the parent handler
-      setFavorite((prev) => !prev); //update local state after frontend post request; brought into sync by useEffect 
+      await onFavoriteToggle(project._id); // Call the parent handler
+      setFavorite((prev) => !prev); //Update local state after frontend post request
     } catch (err) {
       console.error("Failed to update favorite status", err);
     }
@@ -33,29 +69,44 @@ export default function Project({ project, isFavorite, technologyIcons, showDele
   };
 
   return (
-    <div className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition">
+    <div
+      className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition cursor-pointer"
+      onClick={onClick} //Handle project card click
+    >
       {showDeleteButton && (
         <>
           <button
-            onClick={() => setShowConfirmPopup(true)}
+            onClick={(e) => {
+              e.stopPropagation(); //stop popup from opening aftew delete click
+              setShowConfirmPopup(true);
+            }}
             className="absolute top-2 right-2 text-red-500 text-xl font-bold project-button"
             title="Delete Project"
           >
             ✕
           </button>
           {showConfirmPopup && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+            <div
+              className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10"
+              onClick={(e) => e.stopPropagation()} //stop popup from opening after confirm wondow
+            >
               <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
                 <p className="mb-4">Are you sure you want to delete this project?</p>
                 <div className="flex justify-end gap-4">
                   <button
-                    onClick={() => setShowConfirmPopup(false)}
+                    onClick={(e) => {
+                      e.stopPropagation(); //stop popup after conf click
+                      setShowConfirmPopup(false);
+                    }}
                     className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 project-button"
                   >
                     Cancel
                   </button>
                   <button
-                    onClick={handleDelete}
+                    onClick={(e) => {
+                      e.stopPropagation(); ////stop popup after conf click
+                      handleDelete();
+                    }}
                     className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 project-button"
                   >
                     Delete
@@ -68,9 +119,12 @@ export default function Project({ project, isFavorite, technologyIcons, showDele
       )}
       <h2 className="text-2xl font-semibold text-blue-400 mb-2 flex items-center">
         {project.title}
-        {isLoggedIn && ( //Only render favorite button if the user is logged in
+        {isLoggedIn && (
           <button
-            onClick={handleFavoriteToggle}
+            onClick={(e) => {
+              e.stopPropagation(); //stop popup when clicking favorite
+              handleFavoriteToggle();
+            }}
             className={`ml-0 text-xl font-bold project-button ${
               favorite ? "text-yellow-400" : "text-gray-400"
             } hover:text-yellow-500`}
@@ -129,6 +183,35 @@ export default function Project({ project, isFavorite, technologyIcons, showDele
           </Link>
         </p>
       )}
+      {/* TO DO: long strings with no spaces breaksd frontend layout */}
+      {comments.length > 0 && (
+    <div className="mt-4">
+      <h3 className="text-lg font-semibold text-gray-400">Comments:</h3>
+      <ul className="comments-container text-gray-300 bg-gray-800 p-2 rounded-lg">
+        {comments.map((comment) => (
+          <li key={comment._id} className="mb-4 flex items-center">
+            {comment.user.profileImage && (
+              <img
+                src={comment.user.profileImage}
+                alt={comment.user.name}
+                className="w-6 h-6 rounded-full mr-3"
+              />
+            )}
+            <div>
+              <p className="text-gray-300 break-words">
+                <strong>{comment.user.name}:</strong> {comment.content}
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {hasMoreComments && (
+        <p className="text-blue-500 hover:underline cursor-pointer">
+          Click to view more
+        </p>
+      )}
+    </div>
+  )}
     </div>
   );
 }
