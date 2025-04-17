@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import Project from "./Project";
 import CommentSection from "./CommentSection";
-import TagSelector from "./ProjectTagSelector";
-
+//import TagSelector from "./ProjectTagSelector";
+import CreateProjTagSelector from "./CreateProjTagSelector";
 
 export default function SearchProjectList({ projects, favorites, 
   technologyIcons, showDeleteButton, onDelete,
@@ -59,7 +59,10 @@ export default function SearchProjectList({ projects, favorites,
     <div>
 
     <div className="mb-4">
-      <TagSelector
+      <CreateProjTagSelector
+        name ="Project Tags"
+        prompt="Select or add tags to filter projects"
+        
          availableTags={Array.from(
             new Set(projects.flatMap((project) => project.technologies))).map((tech) => ({
             name: tech,

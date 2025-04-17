@@ -49,12 +49,12 @@ export default function ProjectList({ projects, favorites,
       {/* Modal/Popoup for the selected project */}
       {selectedProject && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-10"
-          onClick={closeModal} //click anywhere outside the modal to close it
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-10 transition-opacity duration-100"
+          onClick={closeModal}
         >
           <div
-            className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-3xl w-full relative max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()} //prevent click propagation while in popup
+            className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-3xl w-full relative max-h-[90vh] overflow-y-auto transform transition-transform duration-100 scale-95"
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={(e) => {

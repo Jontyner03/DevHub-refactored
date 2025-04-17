@@ -62,8 +62,11 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
       <h3 className="text-lg font-semibold text-gray-400">Comments:</h3>
       <div className="max-h-48 overflow-y-auto bg-gray-800 p-4 rounded-lg mt-2">
         {comments.length > 0 ? (
-          comments.map((comment) => (
-            <div key={comment._id} className="mb-4 flex justify-between items-start">
+          comments.map((comment, index) => (
+            <div
+              key={comment._id}
+              className={`mb-4 pb-4 ${index < comments.length - 1 ? 'border-b border-gray-700' : ''}`}
+            >
               <div className="flex items-start">
                 {comment.user.profileImage && (
                   <img
@@ -85,15 +88,20 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
                     {comment.content}
                   </p>
                 </div>
-              </div>
+              
               {isLoggedIn && comment.user._id === currentUserId && (
                 <button
-                  onClick={() => handleDeleteComment(comment._id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
+                  onClick={() => 
+                    handleDeleteComment(comment._id)
+                  }
+                  className="project-button mt-2 text-red-500 hover:text-red-700 flex items-right"
                 >
-                  Delete
+                  ✕
                 </button>
               )}
+
+              </div>
+              
             </div>
           ))
         ) : (
@@ -102,12 +110,14 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
       </div>
       {isLoggedIn ? (
         <div className="mt-4">
-          <textarea
-            className="w-full p-3 bg-gray-800 text-white rounded-lg resize-none"
-            placeholder="Write a comment..."
-            value={newComment}
-            onChange={handleInputChange}
-          ></textarea>
+        <textarea
+          id="commentInput" 
+          name="commentInput" 
+          className="w-full p-3 bg-gray-800 text-white rounded-lg resize-none"
+          placeholder="Write a comment..."
+          value={newComment}
+          onChange={handleInputChange}
+        ></textarea>
           <p className={`text-sm ${charCount === maxCharLimit ? 'text-red-500' : 'text-gray-400'}`}>
             {charCount}/{maxCharLimit} characters
           </p>

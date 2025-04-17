@@ -69,102 +69,111 @@ export default function Project({
   };
 
   return (
-    <div
-      className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition cursor-pointer"
-      onClick={onClick} //Handle project card click
-    >
-      {showDeleteButton && (
-        <>
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); //stop popup from opening aftew delete click
-              setShowConfirmPopup(true);
-            }}
-            className="absolute top-2 right-2 text-red-500 text-xl font-bold project-button"
-            title="Delete Project"
+  <div
+    className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition cursor-pointer sm:p-6"
+    onClick={onClick}
+  >
+    {showDeleteButton && (
+      <>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowConfirmPopup(true);
+          }}
+          className="absolute top-2 right-2 text-red-500 text-xl font-bold project-button sm:text-2xl"
+          title="Delete Project"
+        >
+          ✕
+        </button>
+        {showConfirmPopup && (
+          <div
+            className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10"
+            onClick={(e) => e.stopPropagation()}
           >
-            ✕
-          </button>
-          {showConfirmPopup && (
-            <div
-              className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10"
-              onClick={(e) => e.stopPropagation()} //stop popup from opening after confirm wondow
-            >
-              <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg">
-                <p className="mb-4">Are you sure you want to delete this project?</p>
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation(); //stop popup after conf click
-                      setShowConfirmPopup(false);
-                    }}
-                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 project-button"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation(); ////stop popup after conf click
-                      handleDelete();
-                    }}
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 project-button"
-                  >
-                    Delete
-                  </button>
-                </div>
+            <div className="bg-gray-800 text-white p-6 rounded-lg shadow-lg sm:p-8">
+              <p className="mb-4">Are you sure you want to delete this project?</p>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowConfirmPopup(false);
+                  }}
+                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 project-button sm:px-6 sm:py-3"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                  }}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 project-button sm:px-6 sm:py-3"
+                >
+                  Delete
+                </button>
               </div>
             </div>
-          )}
-        </>
-      )}
-      <h2 className="text-2xl font-semibold text-blue-400 mb-2 flex items-center">
-        {project.title}
-        {isLoggedIn && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); //stop popup when clicking favorite
-              handleFavoriteToggle();
-            }}
-            className={`ml-0 text-xl font-bold project-button ${
-              favorite ? "text-yellow-400" : "text-gray-400"
-            } hover:text-yellow-500`}
-            title={favorite ? "Unfavorite Project" : "Favorite Project"}
-          >
-            ★
-          </button>
+          </div>
         )}
-      </h2>
-      <p className="text-gray-300 mb-4">{project.description}</p>
-      {project.link && (
-        <a
-          href={project.link}
-          className="text-blue-500 hover:underline"
-          target="_blank"
-          rel="noopener noreferrer"
+      </>
+    )}
+    <h2 className="text-2xl font-semibold text-blue-400 mb-2 flex items-center sm:text-3xl">
+      {project.title}
+      {isLoggedIn && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleFavoriteToggle();
+          }}
+          className={`ml-0 text-xl font-bold project-button ${
+            favorite ? "text-yellow-400" : "text-gray-400"
+          } hover:text-yellow-500 sm:text-2xl`}
+          title={favorite ? "Unfavorite Project" : "Favorite Project"}
         >
-          Visit Project ↗
-        </a>
+          ★
+        </button>
       )}
-      {project.image && (
+    </h2>
+    <p className="text-gray-300 mb-4 sm:text-lg">{project.description}</p>
+    {project.link && (
+      <a
+        href={project.link}
+        className="text-blue-500 hover:underline sm:text-lg"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Visit Project ↗
+      </a>
+    )}
+    {project.image && (
+      <div className="flex justify-center items-center mt-4">
         <img
           src={project.image}
           alt="Project"
-          className="w-full h-auto object-cover rounded-lg mt-4"
+          className="w-full max-w-[300px] max-h-[300px] object-contain rounded-lg shadow-md sm:max-w-[400px] sm:max-h-[400px]"
         />
-      )}
-      <div className="mt-4">
-        <h3 className="text-lg font-semibold text-gray-400">Technologies:</h3>
-        <div className="flex flex-wrap gap-2 mt-2">
-          {project.technologies.map((tech) => (
-            <div key={tech} className="flex items-center bg-gray-800 text-white px-3 py-1 rounded-full shadow">
-              {technologyIcons[tech] && (
-                <img src={technologyIcons[tech]} alt={tech} className="w-4 h-4 mr-2" />
-              )}
-              <span>{tech}</span>
-            </div>
-          ))}
-        </div>
       </div>
+    )}
+        <div className="mt-4">
+          <h3 className="text-lg font-semibold text-gray-400">Technologies:</h3>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {project.technologies.map((tech) => (
+              <div
+                key={tech}
+                className="flex items-center bg-gray-800 text-white px-3 py-1 rounded-full shadow"
+              >
+                {technologyIcons[tech] && (
+                  <img
+                    src={technologyIcons[tech]} //Local SVG's
+                    alt={tech}
+                    className="w-4 h-4 mr-2"
+                  />
+                )}
+                <span>{tech}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       <div className="mt-4">
         <h3 className="text-lg font-semibold text-gray-400">Categories:</h3>
         <div className="flex flex-wrap gap-2 mt-2">
