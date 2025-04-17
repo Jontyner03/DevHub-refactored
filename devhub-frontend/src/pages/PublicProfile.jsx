@@ -20,6 +20,9 @@ export default function PublicProfile() {
     fetchProfile();
   }, [id]);
 
+  document.body.style.overflow = "auto";//enable scrolling after navigating from modal
+
+
   if (!user) return <p className="p-6">Loading profile...</p>;
 
   return (

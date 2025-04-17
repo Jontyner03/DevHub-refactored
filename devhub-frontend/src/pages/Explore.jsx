@@ -65,7 +65,7 @@ export default function Explore() {
     };
 
     const fetchFavorites = async () => {
-      //if user is logged in, fetch favorites
+      //if user is logged, in fetch favorites
       if (token) {
         try {
           const res = await axiosInstance.get("/users/favorite/me");
@@ -79,6 +79,22 @@ export default function Explore() {
     fetchAllProjects();
     fetchFavorites();
   }, []);
+
+  //Refresh the project list with the latest comments when a new comment is added
+  const refreshProjects = async (projectId) => {
+    try {
+      const res = await axiosInstance.get(`/comments/${projectId}?limit=2`);
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project._id === projectId
+            ? { ...project, comments: res.data.comments, hasMoreComments: res.data.hasMore }
+            : project
+        )
+      );
+        } catch (err) {
+      console.error("Failed to refresh project comments", err);
+    }
+  };
 
   const handleFavoriteToggle = async (projectId) => {
     try {
@@ -104,8 +120,9 @@ export default function Explore() {
           favorites={isLoggedIn ? favorites : []}
           technologyIcons={technologyIcons}
           showDeleteButton={false}
-          onFavoriteToggle={isLoggedIn ? handleFavoriteToggle : null} //Pass toggle handler only if logged in
-          isLoggedIn={isLoggedIn} //Pass isLoggedIn to ProjectList
+          onFavoriteToggle={isLoggedIn ? handleFavoriteToggle : null} //Pass toggle handler if logged in
+          isLoggedIn={isLoggedIn} 
+          refreshProjects={refreshProjects} //pass refresh to signal comment added
         />
       )}
       {!isLoggedIn && (

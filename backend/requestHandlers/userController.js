@@ -74,7 +74,7 @@ export const favoriteProject = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
-    console.log(projectId);
+    //console.log(projectId);
     if (user.favorites.includes(projectId)) {
       console.log("unfavorting project");
       user.favorites.pull(projectId); //rmv from favorites
