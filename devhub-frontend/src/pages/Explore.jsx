@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { Link } from "react-router-dom";
-import ProjectList from "../components/ProjectList";
+import SearchProjectList from "../components/SearchProjectList";
 
 export default function Explore() {
   const [projects, setProjects] = useState([]);
@@ -115,7 +115,7 @@ export default function Explore() {
       {projects.length === 0 ? (
         <p className="text-gray-400">No projects found.</p>
       ) : (
-        <ProjectList
+        <SearchProjectList
           projects={projects}
           favorites={isLoggedIn ? favorites : []}
           technologyIcons={technologyIcons}

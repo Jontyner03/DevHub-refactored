@@ -9,14 +9,6 @@ export default function Dashboard() {
   const [favoriteProjects, setFavoriteProjects] = useState([]); //State to hold favorite projects objects
   const [favorites, setFavorites] = useState([]); //State to hold favorite projects
   const [showFavorites, setShowFavorites] = useState(false); // Toggle state for displaying lists
-  //////CHANGES TO HANDLE FAVORITES///////
-  //use effect to fetch favorite project ids from api/favorites/me 
-  //pass to project list 
-  //projects list passes isFavorite prop to project component with the value of project._id in favorites array
-  //if project._id is in favorites array, set isFavorite to true, else false
-
-  //in proj component, clicking favprite triggers handleFavoriteToggle and sends a put request to api/users/favorite/:id
-  //When project is favorited/unfavorited, it will be added to the favorites array in the backend and the Dashboard will update fetchFavorites to include/rmv the project
   
 
     const technologyIcons = {
