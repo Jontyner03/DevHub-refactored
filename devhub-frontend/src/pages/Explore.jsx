@@ -7,6 +7,8 @@ export default function Explore() {
   const [projects, setProjects] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true); 
+
 
   const technologyIcons = {
     React: "/icons/react.svg",
@@ -62,6 +64,9 @@ export default function Explore() {
       } catch (err) {
         console.error("Error loading global feed", err);
       }
+      finally {
+        setLoading(false); // Stop loading after fetching
+     }
     };
 
     const fetchFavorites = async () => {
@@ -110,9 +115,13 @@ export default function Explore() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg z-10 my-14" >
-      <h1 className="text-4xl font-bold mb-4 text-blue-400">Explore Projects</h1>
-      {projects.length === 0 ? (
+    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg my-14" >
+      <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Explore Projects</h1>
+      {loading ? (
+        <div className="flex justify-center items-center h-40">
+          <div className="loader"></div> 
+        </div>
+      ) : projects.length === 0 ? (
         <p className="text-gray-400">No projects found.</p>
       ) : (
         <SearchProjectList

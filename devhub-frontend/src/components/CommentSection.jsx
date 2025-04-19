@@ -10,6 +10,7 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
   const [newComment, setNewComment] = useState(""); 
   const [charCount, setCharCount] = useState(0);
   const [commentToDelete, setCommentToDelete] = useState(null); //Track the comment being deleted for conf
+  const [loading, setLoading] = useState(true);
   const maxCharLimit = 300;
 
   const token = localStorage.getItem("token");
@@ -22,6 +23,8 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
         setComments(res.data.comments);
       } catch (err) {
         console.error('Failed to fetch comments', err);
+      } finally {
+        setLoading(false); // Stop loading after fetching
       }
     };
 
@@ -74,7 +77,11 @@ export default function CommentSection({ projectId, isLoggedIn, onCommentAdded }
     <div className="mt-6">
       <h3 className="text-lg font-semibold text-gray-400">Comments:</h3>
       <div className="comments-container max-h-48 overflow-y-auto bg-gray-800 p-4 rounded-lg mt-2">
-        {comments.length > 0 ? (
+      {loading ? (
+          <div className="flex justify-center items-center h-20">
+            <div className="loader"></div> 
+          </div>
+        ) : comments.length > 0 ? (
           comments.map((comment) => (
             <Comment
               key={comment._id}
