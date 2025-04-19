@@ -23,7 +23,7 @@ export default function Explore() {
     Java: "/icons/icons8-java.svg",
     Spring: "/icons/spring.svg",
     "C++": "/icons/c++.svg",
-    "C#": "/icons/icons8-c-sharp-logo-22.svg",
+    "C#": "/icons/icons8-c-sharp-logo-2.svg",
     Ruby: "/icons/ruby.svg",
     Rails: "/icons/rails.svg",
     PHP: "/icons/php.svg",
@@ -110,8 +110,8 @@ export default function Explore() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg z-10" >
-      <h1 className="text-3xl font-bold mb-4 text-blue-400">Explore Projects</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg z-10 my-14" >
+      <h1 className="text-4xl font-bold mb-4 text-blue-400">Explore Projects</h1>
       {projects.length === 0 ? (
         <p className="text-gray-400">No projects found.</p>
       ) : (

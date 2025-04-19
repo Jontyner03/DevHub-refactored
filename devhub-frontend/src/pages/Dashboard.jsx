@@ -144,9 +144,9 @@ export default function Dashboard() {
   //Render another ProjectList component for list of all favoriteed projects
   //Which list is displayed [my projects or favorites] is determined by toggle 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white shadow-lg rounded-lg">
+    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white shadow-lg rounded-lg my-14">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-extrabold text-blue-400">
+        <h1 className="text-4xl font-bold text-blue-400">
           {showFavorites ? "Favorite Projects" : "My Projects"}
         </h1>
         <div className="flex items-center gap-4">
@@ -172,6 +172,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+
       {showFavorites ? (
         <ProjectList
           projects={favoriteProjects}

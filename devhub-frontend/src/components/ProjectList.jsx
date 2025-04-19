@@ -46,21 +46,20 @@ export default function ProjectList({ projects, favorites,
         ))}
       </div>
 
-      {/* Modal/Popoup for the selected project */}
+      {/* Modal/Popup for the selected project */}
       {selectedProject && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-10 transition-opacity duration-100"
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center pt-10"
           onClick={closeModal}
         >
           <div
-            className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-3xl w-full relative max-h-[90vh] overflow-y-auto transform transition-transform duration-100 scale-95"
+            className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-3xl w-full relative max-h-[90vh] overflow-y-auto z-60"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={(e) => {
-                e.stopPropagation(); //prevent click propagation while in popup
-                closeModal(); //close popup
-
+                e.stopPropagation();
+                closeModal();
               }}
               className="modal-close-button absolute top-4 right-4 text-gray-400 hover:text-white text-xl"
             >
@@ -71,15 +70,16 @@ export default function ProjectList({ projects, favorites,
               project={selectedProject}
               isFavorite={favorites.includes(selectedProject._id)}
               technologyIcons={technologyIcons}
-              showDeleteButton={false} //No delete button in modal
+              showDeleteButton={false}
               onFavoriteToggle={onFavoriteToggle}
               isLoggedIn={isLoggedIn}
+              showComments={false}
             />
             {/* Comments Section */}
             <CommentSection
-             projectId={selectedProject._id} 
-            isLoggedIn={isLoggedIn} 
-            onCommentAdded={() => setCommentAdded(true)} //signal that a comment was added
+              projectId={selectedProject._id}
+              isLoggedIn={isLoggedIn}
+              onCommentAdded={() => setCommentAdded(true)}
             />
           </div>
         </div>

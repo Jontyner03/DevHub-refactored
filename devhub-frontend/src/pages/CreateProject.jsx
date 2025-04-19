@@ -103,8 +103,11 @@ export default function CreateProject() {
     {name : "#scripting"},
   ];
 
-const sanitizeInput = (input) => {
-    return DOMPurify.sanitize(input);
+  const sanitizeInput = (input) => {
+    return DOMPurify.sanitize(input, {
+      ALLOWED_TAGS: [], //Disallow all HTML tags
+      ALLOWED_ATTR: [], //Disallow all attributes
+    });
   };
 
   const isValidURL = (url) => {

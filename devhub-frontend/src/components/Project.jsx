@@ -117,7 +117,7 @@ export default function Project({
         )}
       </>
     )}
-    <h2 className="text-2xl font-semibold text-blue-400 mb-2 flex items-center sm:text-3xl">
+    <h2 className="text-2xl text-blue-400 mb-2 flex items-center sm:text-3xl">
       {project.title}
       {isLoggedIn && (
         <button
@@ -193,7 +193,7 @@ export default function Project({
         </p>
       )}
       {/* TO DO: long strings with no spaces breaksd frontend layout */}
-      {comments.length > 0 && (
+  {((comments.length > 0 ) && (showComments))&&(
     <div className="mt-4">
       <h3 className="text-lg font-semibold text-gray-400">Comments:</h3>
       <ul className="comments-container text-gray-300 bg-gray-800 p-2 rounded-lg">

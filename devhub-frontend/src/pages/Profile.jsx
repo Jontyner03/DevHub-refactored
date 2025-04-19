@@ -39,7 +39,7 @@ export default function Profile() {
 
       <h1 className="text-3xl font-bold mb-4 text-center">Profile</h1>
 
-      <div className="bg-cyan-700 rounded shadow p-6 space-y-6 text-white">
+      <div className="bg-gray-900 rounded shadow p-6 space-y-6 text-white">
         <div>
           <h2 className="text-xl font-semibold">Name</h2>
           <p>{user.name}</p>
