@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
     profileImage: { type: String, default: '' },
     github: { type: String, default: '' },
     linkedin: { type: String, default: '' },
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }], //Array of project IDs that the user has favorited
+    projectCount: { type: Number, default: 0 }, //Count of projects created by the user
+    //projects the user has created and pinned; max 3 projects
+    pinnedProjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }], //Array of project IDs that the user has pinned
 }, { timestamps: true });
 
 //TO DO: Seperate user schema for auth, profile details, and basic info (name, email etc.)

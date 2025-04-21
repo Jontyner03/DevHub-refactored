@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import TagSelector from "../components/ProjectTagSelector";
+import CreateProjTagSelector from "../components/CreateProjTagSelector";
+import DOMPurify from "dompurify";
+
 
 export default function CreateProject() {
   const [title, setTitle] = useState("");
@@ -13,46 +15,47 @@ export default function CreateProject() {
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
-  const availableTags = [
-    { name: "React", icon: "https://cdn.simpleicons.org/react/61DAFB" },
-    { name: "JavaScript", icon: "https://cdn.simpleicons.org/javascript/F7DF1E" },
-    { name: "Node.js", icon: "https://cdn.simpleicons.org/nodedotjs/339933" },
-    { name: "CSS", icon: "https://cdn.simpleicons.org/css3/1572B6" },
-    { name: "HTML", icon: "https://cdn.simpleicons.org/html5/E34F26" },
-    { name: "MongoDB", icon: "https://cdn.simpleicons.org/mongodb/47A248" },
-    { name: "Express", icon: "https://cdn.simpleicons.org/express/000000" },
-    { name: "TailwindCSS", icon: "https://cdn.simpleicons.org/tailwindcss/06B6D4" },
-    { name: "Python", icon: "https://cdn.simpleicons.org/python/3776AB" },
-    { name: "Django", icon: "https://cdn.simpleicons.org/django/092E20" },
-    { name: "Flask", icon: "https://cdn.simpleicons.org/flask/000000" },
-    { name: "Java", icon: "https://cdn.simpleicons.org/java/007396" },
-    { name: "Spring", icon: "https://cdn.simpleicons.org/spring/6DB33F" },
-    { name: "C++", icon: "https://cdn.simpleicons.org/cplusplus/00599C" },
-    { name: "C#", icon: "https://cdn.simpleicons.org/csharp/239120" },
-    { name: "Ruby", icon: "https://cdn.simpleicons.org/ruby/CC342D" },
-    { name: "Rails", icon: "https://cdn.simpleicons.org/rubyonrails/CC0000" },
-    { name: "PHP", icon: "https://cdn.simpleicons.org/php/777BB4" },
-    { name: "Laravel", icon: "https://cdn.simpleicons.org/laravel/FF2D20" },
-    { name: "Go", icon: "https://cdn.simpleicons.org/go/00ADD8" },
-    { name: "Kubernetes", icon: "https://cdn.simpleicons.org/kubernetes/326CE5" },
-    { name: "Docker", icon: "https://cdn.simpleicons.org/docker/2496ED" },
-    { name: "AWS", icon: "https://cdn.simpleicons.org/amazonaws/FF9900" },
-    { name: "Azure", icon: "https://cdn.simpleicons.org/microsoftazure/0078D4" },
-    { name: "Firebase", icon: "https://cdn.simpleicons.org/firebase/FFCA28" },
-    { name: "GraphQL", icon: "https://cdn.simpleicons.org/graphql/E10098" },
-    { name: "PostgreSQL", icon: "https://cdn.simpleicons.org/postgresql/4169E1" },
-    { name: "MySQL", icon: "https://cdn.simpleicons.org/mysql/4479A1" },
-    { name: "Rust", icon: "https://cdn.simpleicons.org/rust/000000" },
-    { name: "Angular", icon: "https://cdn.simpleicons.org/angular/DD0031" },
-    { name: "Next.js", icon: "https://cdn.simpleicons.org/nextdotjs/000000" },
-    { name: "TypeScript", icon: "https://cdn.simpleicons.org/typescript/3178C6" },
-    { name: "Linux", icon: "https://cdn.simpleicons.org/linux/FCC624" },
-    { name: "Git", icon: "https://cdn.simpleicons.org/git/F05032" },
-    { name: "Vue", icon: "https://cdn.simpleicons.org/vuedotjs/4FC08D" },
-    { name: "Flutter", icon: "https://cdn.simpleicons.org/flutter/02569B" },
-    { name: "iOS", icon: "https://cdn.simpleicons.org/apple/000000" },
-    { name: "Android", icon: "https://cdn.simpleicons.org/android/3DDC84" },
-  ];
+  const availableTags = Object.entries({
+    React: "/icons/react.svg",
+    JavaScript: "/icons/javascript.svg",
+    "Node.js": "/icons/nodejs.svg",
+    CSS: "/icons/css.svg",
+    HTML: "/icons/html.svg",
+    MongoDB: "/icons/mongodb.svg",
+    Express: "/icons/express.svg",
+    TailwindCSS: "/icons/tailwind.svg",
+    Python: "/icons/python.svg",
+    Django: "/icons/django.svg",
+    Flask: "/icons/flask.svg",
+    Java: "/icons/icons8-java.svg",
+    Spring: "/icons/spring.svg",
+    "C++": "/icons/c++.svg",
+    "C#": "/icons/icons8-c-sharp-logo-2.svg",
+    Ruby: "/icons/ruby.svg",
+    Rails: "/icons/rails.svg",
+    PHP: "/icons/php.svg",
+    Laravel: "/icons/laravel.svg",
+    Go: "/icons/go.svg",
+    Kubernetes: "/icons/kubernetes.svg",
+    Docker: "/icons/docker.svg",
+    AWS: "/icons/icons8-amazon-web-services.svg",
+    Azure: "/icons/icons8-azure.svg",
+    Firebase: "/icons/firebase.svg",
+    GraphQL: "/icons/graphql.svg",
+    PostgreSQL: "/icons/postgresql.svg",
+    MySQL: "/icons/mysql.svg",
+    Rust: "/icons/rust.svg",
+    Angular: "/icons/angular.svg",
+    "Next.js": "/icons/nextjs.svg",
+    TypeScript: "/icons/typescript.svg",
+    Linux: "/icons/linux.svg",
+    Git: "/icons/git.svg",
+    Vue: "/icons/vue.svg",
+    Flutter: "/icons/flutter.svg",
+    iOS: "/icons/ios.svg",
+    Android: "/icons/android.svg",
+  }).map(([name, icon]) => ({ name, icon }));
+
 
   const availableCategories = [
     { name: "#webdev" },
@@ -67,26 +70,121 @@ export default function CreateProject() {
     { name: "#machinelearning" },
     { name: "#ai" },
     { name: "#data" },
+    { name: "#game" },
+    { name: "#blockchain" },
+    { name: "#opensource" },
+    { name: "#ecommerce" },
+    { name: "#iot" },
+    { name: "#arvr" },
+    { name: "#chatbot" },
+    { name: "#automation" },
+    { name: "#microservices" },
+    { name: "#api" },
+    { name: "#testing" },
+    { name: "#uxui" },
+    { name: "#design" },
+    { name: "#analytics" },
+    { name: "#networking" },
+    { name: "#database" },
+    { name: "#virtualization" },
+    { name: "#hardware" },
+    { name: "#embedded" },
+    { name: "#robotics" },
+    { name: "#3dprinting" },
+    {name : "#helpwanted"},
+    {name : "#hackathon"},
+    {name : "#tutorial"},
+    {name : "#learning"},
+    {name : "#resources"},
+    {name : "#community"},
+    {name : "#events"},
+    {name : "#portfolio"},
+    {name : "#showcase"},
+    {name : "#scripting"},
   ];
 
-  const handleFileChange = (e) => {
+  const sanitizeInput = (input) => {
+    return DOMPurify.sanitize(input, {
+      ALLOWED_TAGS: [], //Disallow all HTML tags
+      ALLOWED_ATTR: [], //Disallow all attributes
+    });
+  };
+
+  const isValidURL = (url) => {
+    try {
+      const parsedURL = new URL(url);
+      return parsedURL.protocol === "https:"; //ensure the protocol is HTTPS
+    } catch {
+      return false;
+    }
+  };
+
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    setImage(file);
-    setPreview(URL.createObjectURL(file));
+    if (file) {
+      const resizedImage = await resizeImage(file, 1200, 300); //resize to wXh
+      setImage(resizedImage);
+      setPreview(URL.createObjectURL(resizedImage));
+    }
+  };
+
+  const resizeImage = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let width = img.width;
+        let height = img.height;
+
+        //Maintain aspect ratio within maxWidth and maxHeight
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob((blob) => {
+          resolve(new File([blob], file.name, { type: file.type }));
+        }, file.type);
+      };
+
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (link && !isValidURL(link)) {
+      alert("Please enter a valid URL for the project link.");
+      return;
+    }
+
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
+    formData.append("title", sanitizeInput(title));
+    formData.append("description", sanitizeInput(description));
     formData.append("link", link);
     if (image) {
       formData.append("image", image);
     }
-    formData.append("technologies", tags.map((tag) => tag.name).join(",")); // Add tags
-    formData.append("categories", categories.map((category) => category.name).join(",")); // Add categories
-
+    formData.append("technologies", tags.map((tag) => tag.name).join(",")); //add tags as string
+    formData.append("categories", categories.map((category) => category.name).join(",")); //add categories as string
     try {
       await axiosInstance.post("/projects/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -98,55 +196,117 @@ export default function CreateProject() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-4 text-blue-400">Create New Project</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          className="w-full bg-gray-800 text-white border border-gray-700 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <textarea
-          className="w-full bg-gray-800 text-white border border-gray-700 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <input
-          className="w-full bg-gray-800 text-white border border-gray-700 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Project Link"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-        />
-        {preview && (
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-auto object-contain rounded-lg mt-4"
+    <div className="max-w-2xl mx-auto p-8 bg-gray-900 text-white rounded-lg shadow-lg mt-6 mb-5">
+      <h1 className="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+        Create New Project
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label htmlFor="title" className="block text-gray-300 font-medium mb-2">Title</label>
+          <input
+            id="title"
+            name="title"
+            className="w-full bg-gray-700 text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-4"
+            placeholder="Enter your project title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
           />
-        )}
-        <label className="block mb-2 text-gray-400">Upload Project Image:</label>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="w-full text-gray-400"
-        />
-        <TagSelector
-          availableTags={availableTags}
-          selectedTags={tags}
-          setSelectedTags={setTags}
-        />
-        <TagSelector
-          availableTags={availableCategories}
-          selectedTags={categories}
-          setSelectedTags={setCategories}
-        />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition" type="submit">
-          Create
+        </div>
+
+        <div>
+          <label htmlFor="description" className="block text-gray-300 font-medium mb-2">Description</label>
+          <textarea
+            id="description"
+            name="description"
+            className="w-full bg-gray-700 text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-4"
+            placeholder="Describe your project"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+
+        <div>
+          <label htmlFor="link" className="block text-gray-300 font-medium mb-2">Project Link</label>
+          <input
+            id="link"
+            name="link"
+            type="url"
+            className="w-full bg-gray-700 text-white border border-gray-600 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 sm:p-4"
+            placeholder="Enter your project link (optional)"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+          />
+          {!isValidURL(link) && link && (
+            <p className="text-red-500 text-sm mt-1">Please enter a valid HTTPS URL.</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="fileInput" className="block text-gray-300 font-medium mb-2">Upload Project Image</label>
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              type="button"
+              onClick={() => document.getElementById("fileInput").click()}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition sm:px-6 sm:py-3"
+            >
+              Choose Image
+            </button>
+            {image && (
+              <>
+                <span className="text-gray-400 text-sm sm:text-base">{image.name}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImage(null);
+                    setPreview(null);
+                  }}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition sm:px-6 sm:py-3"
+                >
+                  Remove Image
+                </button>
+              </>
+            )}
+          </div>
+          <input
+            id="fileInput"
+            name="fileInput"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          {preview && (
+            <div className="flex justify-center items-center mt-4">
+              <img
+                src={preview}
+                alt="Preview"
+                className="w-full max-w-[300px] max-h-[300px] object-contain rounded-lg shadow-md sm:max-w-[400px] sm:max-h-[400px]"
+              />
+            </div>
+          )}
+        </div>
+          <CreateProjTagSelector
+            availableTags={availableTags}
+            selectedTags={tags}
+            setSelectedTags={setTags}
+            prompt={"Share your tech stack!"}
+            name="techTags"
+          />
+          <CreateProjTagSelector
+            availableTags={availableCategories}
+            selectedTags={categories}
+            setSelectedTags={setCategories}
+            prompt={"Add some categories!"}
+            name="categories"
+          />
+
+        <button
+          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 rounded-lg hover:from-blue-600 hover:to-purple-600 transition sm:py-4"
+          type="submit"
+        >
+          Create Project
         </button>
       </form>
     </div>

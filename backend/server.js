@@ -4,6 +4,7 @@ dotenv.config();
 import userRoutes from './routes/userRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
+import commentRoutes from './routes/commentRoutes.js'; // Import the comment routes
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -18,6 +19,7 @@ app.use(cors());
 app.use('/api/auth', authRoutes); //authentication routes
 app.use('/api/users', userRoutes); //user routes
 app.use('/api/projects', projectRoutes); //project routes
+app.use('/api/comments', commentRoutes); //comment routes
 
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })

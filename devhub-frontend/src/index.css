@@ -1,22 +1,147 @@
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family:  sans-serif;
   line-height: 1.5;
   font-weight: 400;
+
+  caret-color: transparent; /* hide cursor blinking*/
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
+  background: radial-gradient(circle at bottom center, #1a1a1a, #0d0d0d 60%, #000000 100%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+#root {
+  flex: 1; 
+}
+
+html, body {
+  min-height: 100%; 
+  margin: 0; 
+}
+body {
+  min-width: 320px;
+}
+* {
+  box-sizing: border-box; /* Ensure padding and borders are included in width/height calculations */
+}
+.loader {
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.dropdown-button {
+  font-size: 0.875rem; 
+  line-height: 1.25rem; 
+  font-weight: 500; 
+  padding: 0.5rem 0.75rem; 
+  border: none; 
+  background: transparent; 
+  cursor: pointer; 
+  border-radius: 0.375rem;
+  
+}
+
+.dropdown-button:hover {
+  background-color: #374151; 
+  color: #ffffff; 
+}
+/* Starry background */
+body::before,
+body::after,
+html::before,
+html::after{
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  z-index: -1; 
+  pointer-events: none; 
+  background-repeat: repeat; 
+}
+
+/*small slow stars */
+body::before {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.6) 1px, transparent 1px);
+    background-size: 300px 300px, 400px 400px; /* Dense */
+  animation: float-stars 120s linear infinite;
+  opacity: 0.4; 
+}
+
+/* medium fast stars */
+body::after {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.5) 2px, transparent 2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.3) 2px, transparent 2px);
+  background-size: 500px 500px, 600px 600px; /* mid dense */
+  animation: float-stars-alt 90s linear infinite;
+  opacity: 0.6; 
+}
+
+/*slower stars */
+html::before {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0.5px, transparent 0.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.1) 0.5px, transparent 0.5px);
+  background-size: 600px 400px, 800px 800px; /* sparse */
+  animation: float-stars 180s linear infinite; 
+  opacity: 0.3; 
+}
+
+html::after {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0.75px, transparent 0.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.15) 0.5px, transparent 0.75px);
+  background-size: 700px 700px, 900px 900px; /* Sparse */
+  animation: float-stars-alt 150s linear infinite; 
+  opacity: 0.2;
+}
+
+
+
+/* Floating star animation */
+@keyframes float-stars {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: -400px 400px, -600px 600px; /* Continuous diagonal drift */
+  }
+}
+
+@keyframes float-stars-alt {
+  0% {
+    background-position: 0 0, 0 0;
+  }
+  100% {
+    background-position: 400px -400px, 600px -600px; /* Continuous diagonal drift in the opposite direction */
+  }
+}
+
+
 
 a {
   font-weight: 500;
@@ -27,10 +152,8 @@ a:hover {
   color: #535bf2;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  height: 100%; /* Ensure the body takes up the full height */
+input, textarea {
+  caret-color: #f9f9f9;
 }
 
 h1 {
@@ -38,23 +161,56 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+label {
+  line-height: 1.2; /* Reduce line height for labels */
 }
+
+/* Ensure the close button is fully clickable */
+button.modal-close-button {
+  background: none; 
+  border: none; 
+  padding: 0; 
+  cursor: pointer; 
+  z-index: 10; /* Ensure it appears above other elements */
+}
+
+button.modal-close-button:hover {
+  color: #ffffff; 
+}
+
+button.tag-remove-button {
+  background: none; 
+  border: none; 
+  padding: 0; 
+  font-size: 0.875rem; 
+  color: #9ca3af; 
+  cursor: pointer; 
+}
+
+button.tag-remove-button:hover {
+  color: #6b7280; 
+}
+
+
 button:hover {
   border-color: #646cff;
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+
+
+/* Button styles for project favorite and delete button */
+button.project-button {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  cursor: pointer;
+  transition: none;
 }
 
 @media (prefers-color-scheme: light) {
@@ -70,3 +226,50 @@ button:focus-visible {
   }
 }
 
+/* Ensure comments break long words and wrap properly */
+.comment {
+  background-color: #2d2d2d; 
+  border: 1px solid #3a3a3a; 
+  border-radius: 8px; /* Rounded corners */
+  padding: 1rem; /* Add padding inside the comment */
+  margin-bottom: 1rem; /* Add spacing between comments */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Ensure long words wrap */
+  white-space: normal; /* Allow text to wrap */
+}
+
+/* Ensure the comments container respects word wrapping */
+.comments-container {
+  max-width: 100%; /* Ensure it doesn't exceed the container width */
+  max-height: 10rem; /* Limit the height */
+  overflow-y: auto; /* Add vertical scrolling if needed */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Ensure long words wrap */
+  white-space: normal; /* Allow text to wrap */
+}
+
+/* Highlighted comment styling */
+.highlighted-comment {
+  border: 2px solid #ff0000; 
+  border-radius: 8px; 
+  transform: scale(1.02); 
+}
+
+/* Hover effect for comments */
+.comment:hover {
+  transform: scale(1.01); 
+  border-color: #4a4a4a; 
+}
+.bio-section {
+  background-color: #2d2d2d;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  flex-grow: 1; 
+}
+
+.pinned-projects-carousel .slick-slide > div {
+  padding: 1rem;
+}

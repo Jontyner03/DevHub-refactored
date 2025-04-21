@@ -1,5 +1,6 @@
 import Project from '../schema/Project.js';
 import { cloudinary } from "../config/cloudinary.js";
+import User from '../schema/User.js';
 
 //////CRUD PROJECT OPPS////// requires user JWT authentication provided by auth middware  
 export const createProject = async (req, res) => {
@@ -17,6 +18,8 @@ export const createProject = async (req, res) => {
     });
 
     const savedProject = await newProject.save();
+    await User.findByIdAndUpdate(req.user._id, { $inc: { projectCount: 1 } });
+
     res.status(201).json(savedProject);
   } catch (err) {
     res.status(500).json({ message: "Server error creating project" });
@@ -91,6 +94,7 @@ export const deleteProject = async (req, res) => {
 
     console.log("Deleting project from db");
     await project.deleteOne(); 
+    await User.findByIdAndUpdate(userId, { $inc: { projectCount: -1 } });
     res.json({ message: "Project deleted successfully" });
   } catch (err) {
     console.error("Error deleting project:", err);
@@ -102,11 +106,38 @@ export const deleteProject = async (req, res) => {
 export const getMyProjects = async (req, res) => {
   try {
     const projects = await Project.find({ user: req.user._id })
-      .populate("user", "name email") // Populate user details
+      .populate("user", "name email") //Populate user details
       .sort({ createdAt: -1 });
     res.json(projects);
+    //console.log(projects);
   } catch (err) {
     res.status(500).json({ message: "Failed to load projects" });
+  }
+};
+
+export const pinProject = async (req, res) => {
+  const projectId = req.params.id;
+
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.pinnedProjects.includes(projectId)) {
+      if (user.pinnedProjects.length >= 3) {
+        return res.status(400).json({ message: "You can only pin up to 3 projects." });
+      }
+      user.pinnedProjects.push(projectId);
+    } else {
+      user.pinnedProjects = user.pinnedProjects.filter((id) => id.toString() !== projectId);
+    }
+
+    await user.save();
+    res.json({ message: "Pinned projects updated", pinnedProjects: user.pinnedProjects });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update pinned projects" });
   }
 };
 
@@ -118,6 +149,7 @@ export const getAllProjects = async (req, res) => {
       .populate("user", "name email") //add user details to projects in respone 
       .sort({ createdAt: -1 });
     res.json(projects);
+    //console.log(projects);
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch projects" });
   }
