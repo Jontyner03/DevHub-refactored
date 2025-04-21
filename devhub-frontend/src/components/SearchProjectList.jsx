@@ -1,47 +1,52 @@
 import { useState, useEffect } from "react";
 import Project from "./Project";
 import CommentSection from "./CommentSection";
-//import TagSelector from "./ProjectTagSelector";
 import CreateProjTagSelector from "./CreateProjTagSelector";
 
-export default function SearchProjectList({ projects, favorites, 
-  technologyIcons, showDeleteButton, onDelete,
-   onFavoriteToggle, isLoggedIn, refreshProjects,  }) {
-
+export default function SearchProjectList({
+  projects,
+  favorites,
+  technologyIcons,
+  showDeleteButton,
+  onDelete,
+  onFavoriteToggle,
+  isLoggedIn,
+  refreshProjects,
+  pinnedProjects,
+  onPinToggle,
+}) {
   const [selectedProject, setSelectedProject] = useState(null); //Track the selected project
   const [commentAdded, setCommentAdded] = useState(false); //Track if a comment was added
-  const [filteredProjects, setFilteredProjects] = useState(projects); //filter projects passed as props
+  const [filteredProjects, setFilteredProjects] = useState(projects); //Filter projects passed as props
   const [selectedTags, setSelectedTags] = useState([]); //track selected tags
 
- //Filter and sort projects whenever selectedTags or projects change
- useEffect(() => {
-  if (selectedTags.length === 0) {
-    setFilteredProjects(projects); //Show all projects if no tags are selected
-  } else {
-    const tags = selectedTags.map((tag) => tag.name.toLowerCase());
-    const filtered = projects
-      .filter((project) =>
-        project.technologies.some((tech) => tags.includes(tech.toLowerCase()))
-      )
-      .sort((a, b) => {
-        const aMatches = a.technologies.filter((tech) =>
-          tags.includes(tech.toLowerCase())
-        ).length;
-        const bMatches = b.technologies.filter((tech) =>
-          tags.includes(tech.toLowerCase())
-        ).length;
-        return bMatches - aMatches; 
-      });
+  // Filter and sort projects whenever selectedTags or projects change
+  useEffect(() => {
+    if (selectedTags.length === 0) {
+      setFilteredProjects(projects); // Show all projects if no tags are selected
+    } else {
+      const tags = selectedTags.map((tag) => tag.name.toLowerCase());
+      const filtered = projects
+        .filter((project) =>
+          project.technologies.some((tech) => tags.includes(tech.toLowerCase()))
+        )
+        .sort((a, b) => {
+          const aMatches = a.technologies.filter((tech) =>
+            tags.includes(tech.toLowerCase())
+          ).length;
+          const bMatches = b.technologies.filter((tech) =>
+            tags.includes(tech.toLowerCase())
+          ).length;
+          return bMatches - aMatches;
+        });
 
-    setFilteredProjects(filtered);
-  }
-}, [selectedTags, projects]);
-
-
+      setFilteredProjects(filtered);
+    }
+  }, [selectedTags, projects]);
 
   const handleProjectClick = (project) => {
-    setSelectedProject(project); 
-    document.body.style.overflow = "hidden"; 
+    setSelectedProject(project);
+    document.body.style.overflow = "hidden";
   };
 
   const closeModal = async () => {
@@ -53,25 +58,22 @@ export default function SearchProjectList({ projects, favorites,
     document.body.style.overflow = "auto";
   };
 
-
-
   return (
     <div>
-
-    <div className="mb-4">
-      <CreateProjTagSelector
-        name ="Project Tags"
-        prompt="Select or add tags to filter projects"
-        
-         availableTags={Array.from(
-            new Set(projects.flatMap((project) => project.technologies))).map((tech) => ({
+      <div className="mb-4">
+        <CreateProjTagSelector
+          name="Project Tags"
+          prompt="Select or add tags to filter projects"
+          availableTags={Array.from(
+            new Set(projects.flatMap((project) => project.technologies))
+          ).map((tech) => ({
             name: tech,
             icon: technologyIcons[tech] || null,
-        }))} //pass available tags to the selector as unique enforced set
-        selectedTags={selectedTags}
-        setSelectedTags={setSelectedTags}
-      />
-    </div>
+          }))} // Pass available tags to the selector as a unique enforced set
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+        />
+      </div>
 
       <div className="grid gap-6 max-w-7xl mx-auto">
         {filteredProjects.map((project) => (
@@ -84,6 +86,8 @@ export default function SearchProjectList({ projects, favorites,
             onDelete={onDelete}
             onFavoriteToggle={onFavoriteToggle}
             isLoggedIn={isLoggedIn}
+            isPinned={pinnedProjects.includes(project._id)}
+            onPinToggle={onPinToggle} 
             onClick={() => handleProjectClick(project)}
             showComments={true}             
           />
@@ -118,6 +122,8 @@ export default function SearchProjectList({ projects, favorites,
               showDeleteButton={false} //No delete button in modal
               onFavoriteToggle={onFavoriteToggle}
               isLoggedIn={isLoggedIn}
+              isPinned={pinnedProjects.includes(selectedProject._id)}
+              onPinToggle={onPinToggle} 
             />
             {/* Comments Section */}
             <CommentSection

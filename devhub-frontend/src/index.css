@@ -1,3 +1,5 @@
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,6 +21,18 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+#root {
+  flex: 1; 
+}
+
+html, body {
+  min-height: 100%; 
+  margin: 0; 
+}
+body {
+  min-width: 320px;
+}
 * {
   box-sizing: border-box; /* Ensure padding and borders are included in width/height calculations */
 }
@@ -38,6 +52,22 @@
   100% {
     transform: rotate(360deg);
   }
+}
+.dropdown-button {
+  font-size: 0.875rem; 
+  line-height: 1.25rem; 
+  font-weight: 500; 
+  padding: 0.5rem 0.75rem; 
+  border: none; 
+  background: transparent; 
+  cursor: pointer; 
+  border-radius: 0.375rem;
+  
+}
+
+.dropdown-button:hover {
+  background-color: #374151; 
+  color: #ffffff; 
 }
 /* Starry background */
 body::before,
@@ -126,12 +156,6 @@ input, textarea {
   caret-color: #f9f9f9;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  height: 100%; /* Ensure the body takes up the full height */
-}
-
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -217,7 +241,7 @@ button.project-button {
 /* Ensure the comments container respects word wrapping */
 .comments-container {
   max-width: 100%; /* Ensure it doesn't exceed the container width */
-  max-height: 6rem; /* Limit the height */
+  max-height: 10rem; /* Limit the height */
   overflow-y: auto; /* Add vertical scrolling if needed */
   word-wrap: break-word; /* Break long words */
   overflow-wrap: break-word; /* Ensure long words wrap */
@@ -235,4 +259,17 @@ button.project-button {
 .comment:hover {
   transform: scale(1.01); 
   border-color: #4a4a4a; 
+}
+.bio-section {
+  background-color: #2d2d2d;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  flex-grow: 1; 
+}
+
+.pinned-projects-carousel .slick-slide > div {
+  padding: 1rem;
 }

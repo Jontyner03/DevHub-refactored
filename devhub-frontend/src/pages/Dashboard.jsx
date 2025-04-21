@@ -9,7 +9,7 @@ export default function Dashboard() {
   const [favoriteProjects, setFavoriteProjects] = useState([]); //State to hold favorite projects objects
   const [favorites, setFavorites] = useState([]); //State to hold favorite projects
   const [showFavorites, setShowFavorites] = useState(false); // Toggle state for displaying lists
-  
+  const [pinnedProjects, setPinnedProjects] = useState([]);
 
   const technologyIcons = {
     React: "/icons/react.svg",
@@ -85,6 +85,19 @@ export default function Dashboard() {
     fetchFavorites();
     fetchAllProjects();
   }, []); //run once on mount
+
+  useEffect(() => {
+    const fetchPinnedProjects = async () => {
+      try {
+        const res = await axiosInstance.get("/users/me");
+        setPinnedProjects(res.data.pinnedProjects);
+      } catch (err) {
+        console.error("Failed to load pinned projects", err);
+      }
+    };
+
+    fetchPinnedProjects();
+  }, []);
   
   useEffect(() => {
     //Update favorite projects whenever `projects` or `favorites` changes
@@ -105,7 +118,14 @@ export default function Dashboard() {
       console.error("Failed to update favorite status", err);
     }
   };
-
+  const handlePinToggle = async (projectId) => {
+    try {
+      const res = await axiosInstance.put(`/projects/pin/${projectId}`);
+      setPinnedProjects(res.data.pinnedProjects); // Update pinned projects
+    } catch (err) {
+      console.error("Failed to update pin status", err);
+    }
+  };
   const handleDelete = (projectId) => {
     setMyProjects((prevProjects) =>
       prevProjects.filter((project) => project._id !== projectId)
@@ -145,8 +165,8 @@ export default function Dashboard() {
   //Which list is displayed [my projects or favorites] is determined by toggle 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white shadow-lg rounded-lg my-14">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
+      <div className="flex justify-between items-center mb-6"> 
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">
           {showFavorites ? "Favorite Projects" : "My Projects"}
         </h1>
         <div className="flex items-center gap-4">
@@ -172,7 +192,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-
+  
       {showFavorites ? (
         <ProjectList
           projects={favoriteProjects}
@@ -181,7 +201,9 @@ export default function Dashboard() {
           showDeleteButton={false}
           onFavoriteToggle={handleFavoriteToggle}
           isLoggedIn={true}
-          refreshProjects={refreshProjects} //pass refresh to signal comment added
+          refreshProjects={refreshProjects}
+          pinnedProjects={pinnedProjects} 
+          onPinToggle={handlePinToggle} 
         />
       ) : (
         <ProjectList
@@ -192,7 +214,9 @@ export default function Dashboard() {
           onDelete={handleDelete}
           onFavoriteToggle={handleFavoriteToggle}
           isLoggedIn={true}
-          refreshProjects={refreshProjects} 
+          refreshProjects={refreshProjects}
+          pinnedProjects={pinnedProjects} 
+          onPinToggle={handlePinToggle} 
         />
       )}
     </div>

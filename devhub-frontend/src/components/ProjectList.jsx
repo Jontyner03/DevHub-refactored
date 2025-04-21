@@ -5,7 +5,7 @@ import CommentSection from "./CommentSection";
 
 export default function ProjectList({ projects, favorites, 
   technologyIcons, showDeleteButton, onDelete,
-   onFavoriteToggle, isLoggedIn, refreshProjects,  }) {
+   onFavoriteToggle, isLoggedIn, refreshProjects, pinnedProjects, onPinToggle }) {
 
   const [selectedProject, setSelectedProject] = useState(null); //Track the selected project
   const [commentAdded, setCommentAdded] = useState(false); //Track if a comment was added
@@ -39,6 +39,8 @@ export default function ProjectList({ projects, favorites,
             onDelete={onDelete}
             onFavoriteToggle={onFavoriteToggle}
             isLoggedIn={isLoggedIn}
+            isPinned={pinnedProjects.includes(project._id)} // check if project is pinned and pass as bool
+            onPinToggle={onPinToggle} 
             onClick={() => handleProjectClick(project)} // Open modal on click
             showComments={true} // Show comments section in the project card
             
@@ -74,6 +76,8 @@ export default function ProjectList({ projects, favorites,
               onFavoriteToggle={onFavoriteToggle}
               isLoggedIn={isLoggedIn}
               showComments={false}
+              isPinned={pinnedProjects.includes(selectedProject._id)} 
+              onPinToggle={onPinToggle} 
             />
             {/* Comments Section */}
             <CommentSection

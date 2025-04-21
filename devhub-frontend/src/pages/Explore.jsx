@@ -6,9 +6,9 @@ import SearchProjectList from "../components/SearchProjectList";
 export default function Explore() {
   const [projects, setProjects] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [pinnedProjects, setPinnedProjects] = useState([]); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true); 
-
 
   const technologyIcons = {
     React: "/icons/react.svg",
@@ -51,7 +51,6 @@ export default function Explore() {
     Android: "/icons/android.svg",
   };
 
-  
   useEffect(() => {
     //Check if the user is logged in
     const token = localStorage.getItem("token");
@@ -81,8 +80,21 @@ export default function Explore() {
       }
     };
 
+    const fetchPinnedProjects = async () => {
+      //If user is logged in, fetch pinned projects
+      if (token) {
+        try {
+          const res = await axiosInstance.get("/users/me");
+          setPinnedProjects(res.data.pinnedProjects);
+        } catch (err) {
+          console.error("Failed to load pinned projects", err);
+        }
+      }
+    };
+
     fetchAllProjects();
     fetchFavorites();
+    fetchPinnedProjects();
   }, []);
 
   //Refresh the project list with the latest comments when a new comment is added
@@ -114,12 +126,24 @@ export default function Explore() {
     }
   };
 
+  //handle pin toggles; pin/unpin and refresh pinned projects
+  const handlePinToggle = async (projectId) => {
+    try {
+      const res = await axiosInstance.put(`/projects/pin/${projectId}`);
+      setPinnedProjects(res.data.pinnedProjects); 
+         } catch (err) {
+      console.error("Failed to update pin status", err);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg my-14" >
-      <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text">Explore Projects</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-gray-900 rounded-lg shadow-lg my-14 bg-opacity-90">
+      <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 text-transparent bg-clip-text inline-block">
+        Explore Projects
+      </h1>
       {loading ? (
         <div className="flex justify-center items-center h-40">
-          <div className="loader"></div> 
+          <div className="loader"></div>
         </div>
       ) : projects.length === 0 ? (
         <p className="text-gray-400">No projects found.</p>
@@ -132,6 +156,8 @@ export default function Explore() {
           onFavoriteToggle={isLoggedIn ? handleFavoriteToggle : null} //Pass toggle handler if logged in
           isLoggedIn={isLoggedIn} 
           refreshProjects={refreshProjects} //pass refresh to signal comment added
+          pinnedProjects= {pinnedProjects} //pass pinned projects
+          onPinToggle={isLoggedIn ? handlePinToggle : null} //Pass pin toggle handler if logged in
         />
       )}
       {!isLoggedIn && (

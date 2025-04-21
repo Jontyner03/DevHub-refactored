@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import axiosInstance from "../api/axiosInstance";
+import { FaStar, FaThumbtack } from "react-icons/fa"; 
 
 export default function Project({
   project,
@@ -12,17 +14,44 @@ export default function Project({
   isLoggedIn,
   onClick,
   showComments,
+  isPinned, 
+  onPinToggle,
 }) {
   
   const [favorite, setFavorite] = useState(isFavorite); // Use the prop to set initial state
   const [showConfirmPopup, setShowConfirmPopup] = useState(false);
   const [comments, setComments] = useState([]); //Store comments for the project
   const [hasMoreComments, setHasMoreComments] = useState(false); //Track if more than limit projec
+  const [pinned, setPinned] = useState(isPinned); 
+  const [dropdownOpen, setDropdownOpen] = useState(false); 
+  
+  //validate user from token, let isLoggedin prop control toggle present for read only
+  let userId = null; 
+  const userToken = localStorage.getItem("token"); 
+  if (userToken) {
+    const decodedToken = jwtDecode(userToken); 
+    userId = decodedToken.id; 
+  }
+
 
   //Update favorite state based on prop change passed from parent component
   useEffect(() => {
     setFavorite(isFavorite);
   }, [isFavorite]);
+
+  useEffect(() => {
+    setPinned(isPinned);
+  }, [isPinned]);
+
+  const handlePinToggle = async (e) => {
+    try {
+      await onPinToggle(project._id); 
+      setPinned((prev) => !prev);
+    } catch (err) {
+      console.error("Failed to update pin status", err);
+    }
+  };
+
 
   //Fetch the first 2 comments for the project
   useEffect(() => {
@@ -68,6 +97,14 @@ export default function Project({
     }
   };
 
+  const toggleDropdown = (e) => {
+    e.stopPropagation(); // Prevent triggering the modal
+    setDropdownOpen((prev) => !prev);
+  };
+
+  const closeDropdown = () => {
+    setDropdownOpen(false);
+  };
   return (
   <div
     className="relative border border-gray-700 rounded-lg p-5 shadow-md hover:shadow-lg transition cursor-pointer sm:p-6"
@@ -117,23 +154,55 @@ export default function Project({
         )}
       </>
     )}
-    <h2 className="text-2xl text-blue-400 mb-2 flex items-center sm:text-3xl">
-      {project.title}
-      {isLoggedIn && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleFavoriteToggle();
-          }}
-          className={`ml-0 text-xl font-bold project-button ${
-            favorite ? "text-yellow-400" : "text-gray-400"
-          } hover:text-yellow-500 sm:text-2xl`}
-          title={favorite ? "Unfavorite Project" : "Favorite Project"}
-        >
-          ★
-        </button>
-      )}
-    </h2>
+      <h2 className="text-2xl text-blue-400 mb-2 flex items-center justify-between sm:text-3xl">
+        {project.title}
+        {isLoggedIn && !showDeleteButton && ( //indicates modal open
+          <div className="relative">
+            <div
+              onClick={toggleDropdown}
+              className="p-2 cursor-pointer rounded-full hover:bg-gray-700 transition"
+              title="Options"
+            >
+              <button
+                className="text-gray-400 focus:outline-none hover:text-white transition pointer-events-none"
+              >
+                ⋮
+              </button>
+            </div>
+            {dropdownOpen && (
+              <div
+                className="absolute right-0 mt-2 w-32 bg-gray-800 text-white rounded-lg shadow-lg z-10"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleFavoriteToggle();
+                    closeDropdown();
+                  }}
+                  className="dropdown-button flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-700 transition text-sm"
+                >
+                  <FaStar className={favorite ? "text-yellow-400" : "text-gray-400"} />
+                  {favorite ? "Unfavorite" : "Favorite"}
+                </button>
+                {project.user._id === userId && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handlePinToggle();
+                      closeDropdown();
+                    }}
+                    className="dropdown-button flex items-center gap-2 w-full text-left px-3 py-2 hover:bg-gray-700 transition text-sm"
+                  >
+                    <FaThumbtack className={pinned ? "text-green-400" : "text-gray-400"} />
+                    {pinned ? "Unpin" : "Pin"}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+      </h2>
     <p className="text-gray-300 mb-4 sm:text-lg">{project.description}</p>
     {project.link && (
       <a
